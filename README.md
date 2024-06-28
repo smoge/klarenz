@@ -1,20 +1,27 @@
-# TinySynth/Klarenz
+# Klarenz/TinySynth
 
-Audio processing system that combines a high-performance C++ audio engine with a Haskell DSL.
+- Klarenz is a Haskell DSL for experimentation, creative control, code generation and composition.
 
-TinySynth is a compact audio processing system that combines a high-performance C++ audio engine with Klarenz, a flexible Haskell DSL for intuitive control, code generation and composition.
+- TinySynth is minimalistic high-performance C++ audio engine designed to interface with JACK2
 
 
 ## Project Structure
 
-- `audio-core/`: C++ audio engine
+- `tinysynth/`: C++ audio engine
 - `klarenz/`: Haskell Domain Specific Language 
 
 
+![design](docs/image.png)
+
 ## Prerequisites
 
+- JACK Audio Connection Kit - Linux sound multicore low-latency server API
+- Dear ImGui - immediate GUI
+- GHC - Haskell compiler and interpreter
+- Stack - Haskell deterministic build tool
+- scsynth - James McCartney's SuperCollider Server
 - CMake 
-- JACK Audio Connection Kit
-- Dear ImGui
-- GHC 
-- Stack 
+
+## Getting Started
+
+[Work in Progress, check in later]

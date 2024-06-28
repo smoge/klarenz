@@ -1,9 +1,9 @@
----
 Language:        Cpp
 BasedOnStyle:    LLVM
-ColumnLimit:     90
-IndentWidth:     4
+ColumnLimit:     80
+IndentWidth:     2
 Standard:        c++20
+
 Checks: >
   -*,
   clang-diagnostic-*,
@@ -27,26 +27,27 @@ Checks: >
   misc-unused-using-decls
 
 CheckOptions:
-  - key:             readability-identifier-naming.ClassCase
-    value:           CamelCase
-  - key:             readability-identifier-naming.PrivateMemberPrefix
-    value:           m_
-  - key:             readability-identifier-naming.FunctionCase
-    value:           camelBack
-  - key:             readability-identifier-naming.VariableCase
-    value:           camelBack
-  - key:             readability-identifier-naming.ConstantCase
-    value:           UPPER_CASE
-  - key:             modernize-use-nullptr.NullMacros
-    value:           'NULL'
-  - key:             cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
-    value:           'true'
-  - key:             performance-move-const-arg.CheckTriviallyCopyableMove
-    value:           'false'
-  - key:             readability-function-cognitive-complexity.Threshold
-    value:           '25'
-  - key:             readability-function-cognitive-complexity.IgnoreMacros
-    value:           'true'
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.PrivateMemberPrefix
+    value: m_
+  - key: readability-identifier-naming.FunctionCase
+    value: camelBack
+  - key: readability-identifier-naming.VariableCase
+    value: camelBack
+  - key: readability-identifier-naming.ConstantCase
+    value: '^[A-Z][A-Z]$|^[A-Z][A-Z0-9_]*[A-Z0-9]$'
+  - key: modernize-use-nullptr.NullMacros
+    value: 'NULL'
+  - key: cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
+    value: 'true'
+  - key: performance-move-const-arg.CheckTriviallyCopyableMove
+    value: 'false'
+  - key: readability-function-cognitive-complexity.Threshold
+    value: '25'
+  - key: readability-function-cognitive-complexity.IgnoreMacros
+    value: 'true'
+
 
 HeaderFilterRegex: '.*/(src|include)/.*\.h$'
 WarningsAsErrors: '*'

@@ -3,6 +3,7 @@
 
 #include "../core/Module.h"
 #include "../utils/Utils.h"
+#include "AudioEngine.h"
 #include <cmath>
 #include <memory>
 #include <stdexcept>
@@ -17,14 +18,18 @@ public:
       static_cast<sample_type>(3.14159265358979323846);
   static constexpr sample_type TWO_PI = 2 * PI;
 
-  Oscillator()
-      : m_frequency(440.0), m_phase(0), m_amplitude(1), m_sampleRate(44100) {}
+  Oscillator() : m_frequency(440.0), m_phase(0), m_amplitude(1) {}
 
   [[nodiscard]] unsigned int getNumInputs() const override { return 0; }
+  [[nodiscard]] Oscillator(const Oscillator &) = delete;
+  Oscillator(Oscillator &&) = delete;
+  Oscillator &operator=(const Oscillator &) = delete;
+  Oscillator &operator=(Oscillator &&) = delete;
   [[nodiscard]] unsigned int getNumOutputs() const override { return 1; }
   [[nodiscard]] std::string getInputName(unsigned int index) const override {
     throw std::out_of_range("Oscillator has no inputs");
   }
+
   [[nodiscard]] std::string getOutputName(unsigned int index) const override {
     return (index == 0) ? "Output"
                         : throw std::out_of_range("Invalid output index");
@@ -35,8 +40,8 @@ public:
       m_frequency = util::clamp(value, static_cast<sample_type>(20),
                                 static_cast<sample_type>(20000));
     } else if (name == "amplitude") {
-      m_amplitude = clamp(value, static_cast<sample_type>(0),
-                          static_cast<sample_type>(1));
+      m_amplitude = util::clamp(value, static_cast<sample_type>(0),
+                                static_cast<sample_type>(1));
     }
   }
 
@@ -55,17 +60,20 @@ public:
     return {"frequency", "amplitude"};
   }
 
-
   void reset() override { m_phase = 0; }
-  void prepare(unsigned int sampleRate) override { m_sampleRate = sampleRate; }
+  void prepare(unsigned int sampleRate) override {
+    AudioEngine::setSampleRate(sampleRate);
+  }
 
-  void setFrequency(sample_type freq) { m_frequency = clamp(freq, 20, 20000); }
+  void setFrequency(sample_type freq) {
+    m_frequency = util::clamp(freq, 20, 20000);
+  }
   sample_type getFrequency() const { return m_frequency; }
 
-  void setAmplitude(sample_type amp) { m_amplitude = clamp(amp, 0, 1); }
+  void setAmplitude(sample_type amp) { m_amplitude = util::clamp(amp, 0, 1); }
   sample_type getAmplitude() const { return m_amplitude; }
 
-  virtual sample_type getCurrentValue() const = 0;
+  sample_type getCurrentValue() const = 0;
 
   void setPhase(sample_type phase) {
     m_phase = std::fmod(phase, TWO_PI);
@@ -74,8 +82,10 @@ public:
     }
   }
 
-  void setSampleRate(unsigned int rate) { m_sampleRate = rate; }
-  [[nodiscard]] unsigned int getSampleRate() const { return m_sampleRate; }
+  void setSampleRate(unsigned int rate) { AudioEngine::getSampleRate() = rate; }
+  [[nodiscard]] unsigned int getSampleRate() const {
+    return AudioEngine::getSampleRate();
+  }
 
   // Phase is typically not directly set, but you might want a getter
   sample_type getPhase() const { return m_phase; }
@@ -86,7 +96,7 @@ private:
   sample_type m_frequency;
   sample_type m_phase;
   sample_type m_amplitude;
-  unsigned int m_sampleRate;
+  // unsigned int m_sampleRate;
 };
 
 template <typename sample_type> class SinOsc : public Oscillator<sample_type> {
@@ -97,15 +107,16 @@ public:
       return;
     }
     sample_type *output = outputs[0];
-    
-    sample_type phaseIncrement = this->getFrequency() * this->TWO_PI /
-                             static_cast<sample_type>(this->getSampleRate());
+
+    sample_type phaseIncrement =
+        this->getFrequency() * this->TWO_PI /
+        static_cast<sample_type>(this->getSampleRate());
 
     for (unsigned int i = 0; i < numFrames; ++i) {
-      output[i] = this->getAmplitude * std::sin(this->getPhase);
-      this->getPhase += phaseIncrement;
-      if (this->getPhase >= this->TWO_PI) {
-        this->getPhase -= this->TWO_PI;
+      output[i] = this->getAmplitude * std::sin(this->getPhase());
+      this->getPhase() += phaseIncrement;
+      if (this->getPhase() >= this->TWO_PI) {
+        this->getPhase() -= this->TWO_PI;
       }
     }
   }
@@ -136,11 +147,11 @@ public:
                                  static_cast<sample_type>(this->m_sampleRate);
 
     for (unsigned int i = 0; i < numFrames; ++i) {
-      output[i] = this->getAmplitude *
-                  ((this->getPhase < this->TWO_PI * m_pulseWidth) ? 1 : -1);
-      this->getPhase += phaseIncrement;
-      if (this->getPhase >= this->TWO_PI) {
-        this->getPhase -= this->TWO_PI;
+      output[i] = this->getAmplitude() *
+                  ((this->getPhase() < this->TWO_PI * m_pulseWidth) ? 1 : -1);
+      this->getPhase() += phaseIncrement;
+      if (this->getPhase() >= this->TWO_PI) {
+        this->getPhase() -= this->TWO_PI;
       }
     }
   }
@@ -158,7 +169,8 @@ public:
   void setParameter(const std::string &name, sample_type value) override {
     Oscillator<sample_type>::setParameter(name, value);
     if (name == "pulseWidth") {
-      m_pulseWidth = this->template clamp<sample_type>(value, 0, 1);
+      m_pulseWidth = util::clamp(value, static_cast<sample_type>(0),
+                                 static_cast<sample_type>(1));
     }
   }
 
@@ -189,14 +201,15 @@ public:
       return;
     }
     sample_type *output = outputs[0];
-    sample_type phaseIncrement = this->m_frequency * this->TWO_PI /
-                                 static_cast<sample_type>(this->getSampleRate);
+    sample_type phaseIncrement =
+        this->m_frequency * this->TWO_PI /
+        static_cast<sample_type>(this->getSampleRate());
 
     for (unsigned int i = 0; i < numFrames; ++i) {
-      output[i] = this->getAmplitude * ((this->getPhase / this->PI) - 1);
-      this->getPhase += phaseIncrement;
-      if (this->getPhase >= this->TWO_PI) {
-        this->getPhase -= this->TWO_PI;
+      output[i] = this->getAmplitude() * ((this->getPhase() / this->PI) - 1);
+      this->getPhase() += phaseIncrement;
+      if (this->getPhase() >= this->TWO_PI) {
+        this->getPhase() -= this->TWO_PI;
       }
     }
   }
@@ -227,12 +240,12 @@ public:
 
     for (unsigned int i = 0; i < numFrames; ++i) {
       output[i] =
-          this->getAmplitude * ((this->getPhase < this->PI)
-                                    ? -1 + (2 * this->getPhase / this->PI)
-                                    : 3 - (2 * this->getPhase / this->PI));
-      this->getPhase += phaseIncrement;
-      if (this->getPhase >= this->TWO_PI) {
-        this->getPhase -= this->TWO_PI;
+          this->getAmplitude()((this->getPhase() < this->PI)
+                                   ? -1 + (2 * this->getPhase() / this->PI)
+                                   : 3 - (2 * this->getPhase() / this->PI));
+      this->getPhase() += phaseIncrement;
+      if (this->getPhase() >= this->TWO_PI) {
+        this->getPhase() -= this->TWO_PI;
       }
     }
   }

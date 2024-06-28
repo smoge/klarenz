@@ -1,8 +1,8 @@
 ---
 Language:        Cpp
 BasedOnStyle:    LLVM
-ColumnLimit:     80
-IndentWidth:     2
+ColumnLimit:     90
+IndentWidth:     4
 Standard:        c++20
 Checks: >
   -*,

@@ -22,6 +22,7 @@ public:
 
   Module(Module &&) = delete;
 
+
   /**
    * @brief Copy assignment operator.
    */
@@ -131,6 +132,12 @@ public:
   virtual void prepare(unsigned int sampleRate) {}
 
 protected:
+  /**
+   * @brief Default constructor.
+   * protected constructor to prevent direct instantiation of the base class
+   */
+  Module() = default;
+  
   /**
    * @brief Utility function for clamping values.
    *

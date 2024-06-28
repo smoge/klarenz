@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(AudioCore VERSION 1.0)
+project(TinySynth VERSION 0.1.0)
 
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -72,17 +72,17 @@ file(GLOB_RECURSE LIB_SOURCES
 list(REMOVE_ITEM LIB_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 # Create a library with all your code
-add_library(AudioCore STATIC ${LIB_SOURCES} ${IMGUI_SOURCES})
+add_library(TinySynth STATIC ${LIB_SOURCES} ${IMGUI_SOURCES})
 
 # Link libraries to your library
-target_link_libraries(AudioCore PRIVATE
+target_link_libraries(TinySynth PRIVATE
     ${JACK_LIBRARIES}
     ${OPENGL_LIBRARIES}
     glfw
 )
 
 # Include directories for your library
-target_include_directories(AudioCore PRIVATE
+target_include_directories(TinySynth PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${JACK_INCLUDE_DIRS}
@@ -93,8 +93,8 @@ target_include_directories(AudioCore PRIVATE
 )
 
 # Create main executable
-add_executable(AudioCoreExe ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
-target_link_libraries(AudioCoreExe PRIVATE AudioCore)
+add_executable(TinySynthExe ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
+target_link_libraries(TinySynthExe PRIVATE TinySynth)
 
 # Add test executable
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -102,7 +102,7 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests)
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp
     )
     add_executable(run_tests ${TEST_SOURCES})
-    target_link_libraries(run_tests PRIVATE AudioCore)
+    target_link_libraries(run_tests PRIVATE TinySynth)
 
     # Add test
     enable_testing()

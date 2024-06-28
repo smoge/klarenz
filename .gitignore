@@ -382,9 +382,9 @@ haskell-dsl/dist-newstyle/
 haskell-dsl/.stack-work/
 
 
-audio-code/include/external/
+tinysynth/include/external/
 
-audio-core/include/external/** 
+tinysynth/include/external/** 
 
 build/**
 build2/**

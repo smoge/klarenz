@@ -110,12 +110,12 @@ template <typename sample_type> class SineOsc : public Oscillator<sample_type> {
   public:
     void process(const std::vector<std::optional<sample_type *>> &inputs,
                  std::vector<sample_type *> &outputs, unsigned int numFrames) override {
-        if (outputs.empty() || numFrames == 0)
+        if (outputs.empty() || numFrames == 0) {
             return;
+        }
 
         sample_type *output = outputs[0];
-        std::optional<sample_type *> freqMod =
-            inputs.size() > 0 ? inputs[0] : std::nullopt;
+        std::optional<sample_type *> freqMod = !inputs.empty() ? inputs[0] : std::nullopt;
         std::optional<sample_type *> ampMod =
             inputs.size() > 1 ? inputs[1] : std::nullopt;
 
@@ -276,10 +276,12 @@ template <typename sample_type> class SineOsc : public Oscillator<sample_type> {
                                const std::optional<sample_type *> &freqMod,
                                const std::optional<sample_type *> &ampMod,
                                unsigned int index) {
-        if (freqMod && *freqMod)
+        if (freqMod && *freqMod) {
             freq += (*freqMod)[index];
-        if (ampMod && *ampMod)
+        }
+        if (ampMod && *ampMod) {
             amp *= (*ampMod)[index];
+        }
     }
 
     void wrapPhaseScalar(sample_type &phase) {
@@ -320,7 +322,7 @@ template <typename sample_type> class SawOsc : public Oscillator<sample_type> {
 
         sample_type *output = outputs[0];
         std::optional<sample_type *> freqMod =
-            inputs.size() > 0 ? inputs[0] : std::nullopt;
+            !inputs.empty() ? inputs[0] : std::nullopt;
         std::optional<sample_type *> ampMod =
             inputs.size() > 1 ? inputs[1] : std::nullopt;
 
@@ -473,7 +475,8 @@ template <typename sample_type> class SawOsc : public Oscillator<sample_type> {
 
             applyModulationScalar(currentFrequency, currentAmplitude, freqMod, ampMod, i);
 
-            output[i] = currentAmplitude * ((phase / Constants<sample_type>::piConstant) - 1);
+            output[i] =
+                currentAmplitude * ((phase / Constants<sample_type>::piConstant) - 1);
             phase +=
                 currentFrequency * Constants<sample_type>::twoPiConstant / sampleRate;
             wrapPhaseScalar(phase);
@@ -508,7 +511,8 @@ template <typename sample_type> class SawOsc : public Oscillator<sample_type> {
 
             applyModulationScalar(currentFrequency, currentAmplitude, freqMod, ampMod, i);
 
-            output[i] = currentAmplitude * ((phase / Constants<sample_type>::piConstant) - 1);
+            output[i] =
+                currentAmplitude * ((phase / Constants<sample_type>::piConstant) - 1);
             phase +=
                 currentFrequency * Constants<sample_type>::twoPiConstant / sampleRate;
             wrapPhaseScalar(phase);
@@ -527,7 +531,7 @@ template <typename sample_type> class TriangleOsc : public Oscillator<sample_typ
 
         sample_type *output = outputs[0];
         std::optional<sample_type *> freqMod =
-            inputs.size() > 0 ? inputs[0] : std::nullopt;
+            !inputs.empty() ? inputs[0] : std::nullopt;
         std::optional<sample_type *> ampMod =
             inputs.size() > 1 ? inputs[1] : std::nullopt;
 
@@ -634,8 +638,8 @@ template <typename sample_type> class TriangleOsc : public Oscillator<sample_typ
         const __m128 twoPi = _mm_set1_ps(Constants<sample_type>::twoPiConstant);
         const __m128 pi = _mm_set1_ps(Constants<sample_type>::piConstant);
         const __m128 sampleRateVec = _mm_set1_ps(sampleRate);
-        const __m128 two = _mm_set1_ps(2.0f);
-        const __m128 three = _mm_set1_ps(3.0f);
+        const __m128 two = _mm_set1_ps(2.0F);
+        const __m128 three = _mm_set1_ps(3.0F);
         unsigned int i = 0;
         for (; i < numFrames - 3; i += 4) {
             __m128 freqVec = _mm_set1_ps(baseFrequency);

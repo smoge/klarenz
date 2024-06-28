@@ -3,18 +3,17 @@
 #define MODULARSYSTEM_H
 
 #include "Module.h"
-#include <unordered_map>
-#include <vector>
 #include <memory>
-#include <string>
 #include <optional>
 #include <stdexcept>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace tinysynth {
 
-template <typename sample_type>
-class ModularSystem {
-public:
+template <typename sample_type> class ModularSystem {
+  public:
     ModularSystem() = default;
     ModularSystem(const ModularSystem &) = delete;
     ModularSystem(ModularSystem &&) = delete;
@@ -23,18 +22,18 @@ public:
     ~ModularSystem() = default;
 
     // Add a module to the system
-    void addModule(const std::string& name, std::unique_ptr<Module<sample_type>> module);
+    void addModule(const std::string &name, std::unique_ptr<Module<sample_type>> module);
 
     // Remove a module from the system
-    void removeModule(const std::string& name);
+    void removeModule(const std::string &name);
 
     // Connect two modules
-    void connect(const std::string& fromModule, unsigned int outputIndex,
-                 const std::string& toModule, unsigned int inputIndex);
+    void connect(const std::string &fromModule, unsigned int outputIndex,
+                 const std::string &toModule, unsigned int inputIndex);
 
     // Disconnect two modules
-    void disconnect(const std::string& fromModule, unsigned int outputIndex,
-                    const std::string& toModule, unsigned int inputIndex);
+    void disconnect(const std::string &fromModule, unsigned int outputIndex,
+                    const std::string &toModule, unsigned int inputIndex);
 
     // Process audio through the entire system
     void process(unsigned int numFrames);
@@ -43,9 +42,9 @@ public:
     [[nodiscard]] std::vector<std::string> getModuleNames() const;
 
     // Get a pointer to a specific module
-    Module<sample_type>* getModule(const std::string& name);
+    Module<sample_type> *getModule(const std::string &name);
 
-private:
+  private:
     struct Connection {
         std::string fromModule;
         unsigned int outputIndex{};
@@ -120,20 +119,20 @@ template <typename sample_type>
 void ModularSystem<sample_type>::process(unsigned int numFrames) {
     // Resize audio buffers if necessary
     m_audioBuffers.resize(m_modules.size());
-    for (auto& buffer : m_audioBuffers) {
+    for (auto &buffer : m_audioBuffers) {
         buffer.resize(numFrames);
     }
 
     // Process each module
-    for (const auto& [name, module] : m_modules) {
-        std::vector<std::optional<sample_type*>> inputs;
-        std::vector<sample_type*> outputs;
+    for (const auto &[name, module] : m_modules) {
+        std::vector<std::optional<sample_type *>> inputs;
+        std::vector<sample_type *> outputs;
 
         // Prepare inputs
         inputs.resize(module->getNumInputs(), std::nullopt);
 
         // Set up connections
-        for (const auto& conn : m_connections) {
+        for (const auto &conn : m_connections) {
             if (conn.toModule == name) {
                 auto fromModuleIt = m_modules.find(conn.fromModule);
                 if (fromModuleIt != m_modules.end()) {

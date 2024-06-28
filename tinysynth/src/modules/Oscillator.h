@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace tinysynth {
 

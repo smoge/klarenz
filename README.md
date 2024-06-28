@@ -1,4 +1,4 @@
-# Klarenz/TinySynth
+# TinySynth/Klarenz 
 
 - Klarenz is a Haskell DSL for experimentation, creative control, code generation and composition.
 

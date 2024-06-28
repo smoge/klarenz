@@ -1,0 +1,85 @@
+name:                klarenz
+version:             0.1.0.0
+github:              smoge/klarenz
+license:             GPL-3.0-or-later
+author:              Bernardo Barros
+maintainer:          bernardo.barros@protonmail.ch
+copyright:           Bernardo Barros
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on Github at <https://github.com/smoge/klarenz#readme>
+
+dependencies:
+- base >= 4.11 && < 10
+- rio >= 0.1.12.0
+- bytestring 
+- transformers
+- typed-process
+- vector
+
+default-extensions:
+- BlockArguments
+- ImportQualifiedPost
+- LambdaCase
+- OverloadedRecordDot
+- OverloadedStrings
+- PartialTypeSignatures
+- StrictData
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-export-lists
+- -Wmissing-home-modules
+- -Wpartial-fields
+- -Wredundant-constraints
+- -msse4.2
+- -threaded 
+- -rtsopts 
+- -with-rtsopts=-T 
+# -O2
+
+library:
+  source-dirs: src
+
+executables:
+  klarenz-exe:
+    main:                Main.hs
+    source-dirs:         app
+    dependencies:
+    - klarenz
+    - optparse-simple
+
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -threaded 
+    - -msse4.2
+    - -with-rtsopts=-T 
+    #- -with-rtsopts=-N
+
+tests:
+  klarenz-test:
+    main:                Spec.hs
+    source-dirs:         test
+    dependencies:
+    - klarenz
+    - hspec
+
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N

@@ -1,0 +1,112 @@
+cabal-version: 2.2
+
+-- This file has been generated from package.yaml by hpack version 0.36.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           klarenz
+version:        0.1.0.0
+description:    Please see the README on Github at <https://github.com/smoge/klarenz#readme>
+homepage:       https://github.com/smoge/klarenz#readme
+bug-reports:    https://github.com/smoge/klarenz/issues
+author:         Bernardo Barros
+maintainer:     bernardo.barros@protonmail.ch
+copyright:      Bernardo Barros
+license:        GPL-3.0-or-later
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/smoge/klarenz
+
+library
+  exposed-modules:
+      Import
+      Run
+      Types
+      Util
+  other-modules:
+      Paths_klarenz
+  autogen-modules:
+      Paths_klarenz
+  hs-source-dirs:
+      src
+  default-extensions:
+      BlockArguments
+      ImportQualifiedPost
+      LambdaCase
+      OverloadedRecordDot
+      OverloadedStrings
+      PartialTypeSignatures
+      StrictData
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -msse4.2 -threaded -rtsopts -with-rtsopts=-T
+  build-depends:
+      base >=4.11 && <10
+    , bytestring
+    , rio >=0.1.12.0
+    , transformers
+    , typed-process
+    , vector
+  default-language: Haskell2010
+
+executable klarenz-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_klarenz
+  autogen-modules:
+      Paths_klarenz
+  hs-source-dirs:
+      app
+  default-extensions:
+      BlockArguments
+      ImportQualifiedPost
+      LambdaCase
+      OverloadedRecordDot
+      OverloadedStrings
+      PartialTypeSignatures
+      StrictData
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -msse4.2 -threaded -rtsopts -with-rtsopts=-T -threaded -rtsopts -threaded -msse4.2 -with-rtsopts=-T
+  build-depends:
+      base >=4.11 && <10
+    , bytestring
+    , klarenz
+    , optparse-simple
+    , rio >=0.1.12.0
+    , transformers
+    , typed-process
+    , vector
+  default-language: Haskell2010
+
+test-suite klarenz-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      UtilSpec
+      Paths_klarenz
+  autogen-modules:
+      Paths_klarenz
+  hs-source-dirs:
+      test
+  default-extensions:
+      BlockArguments
+      ImportQualifiedPost
+      LambdaCase
+      OverloadedRecordDot
+      OverloadedStrings
+      PartialTypeSignatures
+      StrictData
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -msse4.2 -threaded -rtsopts -with-rtsopts=-T -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.11 && <10
+    , bytestring
+    , hspec
+    , klarenz
+    , rio >=0.1.12.0
+    , transformers
+    , typed-process
+    , vector
+  default-language: Haskell2010

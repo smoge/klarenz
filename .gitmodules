@@ -1,0 +1,6 @@
+[submodule "include/external/imgui"]
+	path = include/external/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "include/external/jack2"]
+	path = include/external/jack2
+	url = https://github.com/jackaudio/jack2.git

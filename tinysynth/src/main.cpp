@@ -1,5 +1,20 @@
-#include "main.h"
+/*
+ * Copyright (c) 2024 Bernardo Barros
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
+#include "main.h"
 #include <atomic>
 #include <cmath>
 #include <cstdio>
@@ -10,15 +25,12 @@
 #include <thread>
 #include <vector>
 
+#include "../include/external/imgui/backends/imgui_impl_glfw.h"
+#include "../include/external/imgui/backends/imgui_impl_opengl3.h"
+#include "../include/external/imgui/imgui.h"
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include <jack/jack.h>
-
-#include "../include/external/imgui/imgui.h"
-#include "../include/external/imgui/backends/imgui_impl_glfw.h" 
-#include "../include/external/imgui/backends/imgui_impl_opengl3.h"
-
-
 
 // GLFW error callback function
 static void glfw_error_callback(int error, const char *description) {
@@ -186,8 +198,7 @@ int JackClient::process(jack_nframes_t nframes, void *arg) {
   return 0;
 }
 
-void JackClient::jack_shutdown(void *arg) { /* Add necessary cleanup here */
-}
+void JackClient::jack_shutdown(void *arg) { /* Add necessary cleanup here */ }
 
 void JackClient::process_audio(jack_nframes_t nframes) {
   double sample_rate = jack_get_sample_rate(client);

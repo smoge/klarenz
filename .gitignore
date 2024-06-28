@@ -1,38 +1,26 @@
-
 md/
-
-
-
 [Bb]uild/*
-
 CMakeCache.*
 CMakeFiles/*
-[Tt]esting/*
-
 .vscode/*
 .vscode/settings.json
 .vscode/tasks.json
 .vscode/launch.json
 .vscode/extensions.json
-
 *~ 
-
 .history
-
-
-# Local History for Visual Studio
 .localhistory/
-
 tmp/
-
 klarenz/.stack-work/
-
 tinysynth/build/** 
-
 tinysynth/build2/**  
- build/** 
- build2/** 
-
+build/** 
+build2/** 
 build2/.cmake/
 build2/CMakeFiles/**
-/
+klarenz/*.lock
+*~
+*.swp
+tarballs/
+.stack-work/
+my_notes/

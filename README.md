@@ -1,8 +1,8 @@
-# TinySynth
+# TinySynth/Klarenz
 
 Audio processing system that combines a high-performance C++ audio engine with a Haskell DSL.
 
-TinySynth is a compact audio processing system that combines a high-performance C++ audio engine with a flexible Haskell DSL for intuitive control, code generation and composition.
+TinySynth is a compact audio processing system that combines a high-performance C++ audio engine with Klarenz, a flexible Haskell DSL for intuitive control, code generation and composition.
 
 
 ## Project Structure

@@ -24,3 +24,4 @@ klarenz/*.lock
 tarballs/
 .stack-work/
 my_notes/
+klarenz/stack.yaml.lock  

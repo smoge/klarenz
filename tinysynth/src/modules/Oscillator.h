@@ -26,8 +26,14 @@ public:
   Oscillator &operator=(const Oscillator &) = delete;
   Oscillator &operator=(Oscillator &&) = delete;
   [[nodiscard]] unsigned int getNumOutputs() const override { return 1; }
-  [[nodiscard]] std::string getInputName(unsigned int index) const override {
-    throw std::out_of_range("Oscillator has no inputs");
+
+  // [[nodiscard]] std::string getInputName(unsigned int index) const override {
+  //   throw std::out_of_range("Oscillator has no inputs");
+  // }
+
+  [[nodiscard]] std::string
+  getInputName([[maybe_unused]] unsigned int index) const override {
+    return ""; // or return "NO_INPUT";
   }
 
   [[nodiscard]] std::string getOutputName(unsigned int index) const override {
@@ -88,7 +94,7 @@ public:
   }
 
   // Phase is typically not directly set, but you might want a getter
-  sample_type getPhase() const { return m_phase; }
+  sample_type getPhase() const { return this->m_phase; }
 
   virtual ~Oscillator() = default;
 

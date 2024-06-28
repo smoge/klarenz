@@ -1,6 +1,7 @@
 // ModularSystem.cpp
 #include "ModularSystem.h"
 #include <algorithm>
+#include <optional>
 #include <stdexcept>
 
 namespace tinysynth {
@@ -63,47 +64,49 @@ void ModularSystem<sample_type>::disconnect(const std::string &fromModule,
     }
 }
 
-template <typename sample_type>
-void ModularSystem<sample_type>::process(unsigned int numFrames) {
-    // Resize audio buffers if necessary
-    m_audioBuffers.resize(m_modules.size());
-    for (auto &buffer : m_audioBuffers) {
-        buffer.resize(numFrames);
-    }
 
-    // Process each module
-    for (const auto &[name, module] : m_modules) {
-        std::vector<std::optional<sample_type *>> inputs;
-        std::vector<sample_type *> outputs;
 
-        // Prepare inputs
-        for (unsigned int i = 0; i < module->getNumInputs(); ++i) {
-            inputs.push_back(nullptr); // Initialize with no connection
-        }
+// template <typename sample_type>
+// void ModularSystem<sample_type>::process(unsigned int numFrames) {
+//     // Resize audio buffers if necessary
+//     m_audioBuffers.resize(m_modules.size());
+//     for (auto &buffer : m_audioBuffers) {
+//         buffer.resize(numFrames);
+//     }
 
-        // Set up connections
-        for (const auto &conn : m_connections) {
-            if (conn.toModule == name) {
-                auto fromModuleIt = m_modules.find(conn.fromModule);
-                if (fromModuleIt != m_modules.end()) {
-                    inputs[conn.inputIndex] =
-                        m_audioBuffers[std::distance(m_modules.begin(), fromModuleIt)]
-                            .data();
-                }
-            }
-        }
+//     // Process each module
+//     for (const auto &[name, module] : m_modules) {
+//         std::vector<std::optional<sample_type *>> inputs;
+//         std::vector<sample_type *> outputs;
 
-        // Prepare outputs
-        for (unsigned int i = 0; i < module->getNumOutputs(); ++i) {
-            outputs.push_back(
-                m_audioBuffers[std::distance(m_modules.begin(), m_modules.find(name))]
-                    .data());
-        }
+//         // Prepare inputs
+//         for (unsigned int i = 0; i < module->getNumInputs(); ++i) {
+//             inputs.push_back(nullptr); // Initialize with no connection
+//         }
 
-        // Process the module
-        module->process(inputs, outputs, numFrames);
-    }
-}
+//         // Set up connections
+//         for (const auto &conn : m_connections) {
+//             if (conn.toModule == name) {
+//                 auto fromModuleIt = m_modules.find(conn.fromModule);
+//                 if (fromModuleIt != m_modules.end()) {
+//                     inputs[conn.inputIndex] =
+//                         m_audioBuffers[std::distance(m_modules.begin(), fromModuleIt)]
+//                             .data();
+//                 }
+//             }
+//         }
+
+//         // Prepare outputs
+//         for (unsigned int i = 0; i < module->getNumOutputs(); ++i) {
+//             outputs.push_back(
+//                 m_audioBuffers[std::distance(m_modules.begin(), m_modules.find(name))]
+//                     .data());
+//         }
+
+//         // Process the module
+//         module->process(inputs, outputs, numFrames);
+//     }
+// }
 
 template <typename sample_type>
 std::vector<std::string> ModularSystem<sample_type>::getModuleNames() const {

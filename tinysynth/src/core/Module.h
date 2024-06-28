@@ -13,6 +13,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <optional>
 
 namespace tinysynth {
 
@@ -25,8 +26,14 @@ template <typename sample_type> class Module {
     Module &operator=(Module &&) = delete;
     virtual ~Module() = default;
 
-    virtual void process(const std::vector<sample_type *> &inputs,
-                         std::vector<sample_type *> &outputs, unsigned int numFrames) = 0;
+    // virtual void process(const std::vector<sample_type *> &inputs,
+    //                      std::vector<sample_type *> &outputs, unsigned int numFrames) = 0;
+
+  virtual void process(const std::vector<std::optional<sample_type*>>& inputs,
+                         std::vector<sample_type*>& outputs,
+                         unsigned int numFrames) = 0;
+    
+    
     [[nodiscard]] virtual unsigned int getNumInputs() const = 0;
     [[nodiscard]] virtual unsigned int getNumOutputs() const = 0;
     [[nodiscard]] virtual std::string getInputName(unsigned int index) const = 0;

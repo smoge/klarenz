@@ -25,3 +25,7 @@ tarballs/
 .stack-work/
 my_notes/
 klarenz/stack.yaml.lock  
+tinysynth/tinysynth/cmake_install.cmake
+tinysynth/CMakeFiles/
+tinysynth/cmake_install.cmake
+tinysynth/build.ninja

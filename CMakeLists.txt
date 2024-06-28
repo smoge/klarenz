@@ -7,20 +7,20 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_subdirectory(tinysynth)
 
-find_program(STACK_EXECUTABLE stack)
-if(NOT STACK_EXECUTABLE)
-    message(FATAL_ERROR "Stack not found.")
-endif()
+# find_program(STACK_EXECUTABLE stack)
+# if(NOT STACK_EXECUTABLE)
+#     message(FATAL_ERROR "Stack not found.")
+# endif()
 
-add_custom_target(klarenz
-    COMMAND ${STACK_EXECUTABLE} build
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/klarenz
-    COMMENT "Building Klarenz")
+# add_custom_target(klarenz
+#     COMMAND ${STACK_EXECUTABLE} build
+#     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/klarenz
+#     COMMENT "Building Klarenz")
 
-add_custom_target(test_klarenz
-    COMMAND ${STACK_EXECUTABLE} test
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/klarenz
-    COMMENT "Testing Klarenz")
+# add_custom_target(test_klarenz
+#     COMMAND ${STACK_EXECUTABLE} test
+#     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/klarenz
+#     COMMENT "Testing Klarenz")
 
 # Make the C++ build depend on the Haskell build
 # add_dependencies(tinysynth klarenz)

@@ -19,7 +19,6 @@
 // This file contains the implementation of the Oscillator class and its derived classes
 // With LLVM SIMD optimizations and anti-aliasing techniques
 
-
 namespace tinysynth {
 
 template <typename sample_type> class Oscillator : public Module<sample_type> {
@@ -129,22 +128,21 @@ template <typename sample_type> class Oscillator : public Module<sample_type> {
 
 ///////////////////////// SinOscc class definition /////////////////////////
 
-template <typename sample_type>
-class SineOsc : public Module<sample_type> {
+template <typename sample_type> class SineOsc : public Module<sample_type> {
   public:
     void process(const std::vector<std::optional<sample_type *>> &inputs,
                  std::vector<sample_type *> &outputs, unsigned int numFrames) override {
-        
-    // void process(const std::vector<std::optional<sample_type *>> &inputs,
-    //              std::vector<sample_type *> &outputs, unsigned int numFrames) override {
+
+        // void process(const std::vector<std::optional<sample_type *>> &inputs,
+        //              std::vector<sample_type *> &outputs, unsigned int numFrames)
+        //              override {
 
         if (outputs.empty() || numFrames == 0) {
             return;
-}
+        }
 
         sample_type *output = outputs[0];
-        std::optional<sample_type *> freqMod =
-            !inputs.empty() ? inputs[0] : std::nullopt;
+        std::optional<sample_type *> freqMod = !inputs.empty() ? inputs[0] : std::nullopt;
         std::optional<sample_type *> ampMod =
             inputs.size() > 1 ? inputs[1] : std::nullopt;
 
@@ -172,12 +170,11 @@ class SineOsc : public Module<sample_type> {
         return this->getAmplitude() * std::sin(this->getPhase());
     }
 
- 
-private:
+  private:
     using vec_t = llvm::SmallVector<sample_type, 8>;
 
-    void processSIMD(sample_type* output, const std::optional<sample_type*>& freqMod,
-                     const std::optional<sample_type*>& ampMod, sample_type& phase,
+    void processSIMD(sample_type *output, const std::optional<sample_type *> &freqMod,
+                     const std::optional<sample_type *> &ampMod, sample_type &phase,
                      sample_type baseFrequency, sample_type baseAmplitude,
                      sample_type sampleRate, unsigned int numFrames) {
         constexpr int vectorSize = 8;
@@ -203,7 +200,7 @@ private:
 
             // Calculate phase increment and update phase
             vec_t phaseIncVec = freqVec * twoPi / sampleRateVec;
-            
+
             // Calculate sine wave
             vec_t sinVec(vectorSize);
             for (int j = 0; j < vectorSize; ++j) {
@@ -234,23 +231,26 @@ private:
 
 /////// SawOsc class definition ///////
 
-template <typename sample_type>
-class SawOsc : public Module<sample_type> {
+template <typename sample_type> class SawOsc : public Module<sample_type> {
   public:
-    void process(const std::vector<std::optional<sample_type*>>& inputs,
-                 std::vector<sample_type*>& outputs, unsigned int numFrames) override {
-        if (outputs.empty() || numFrames == 0) return;
+    void process(const std::vector<std::optional<sample_type *>> &inputs,
+                 std::vector<sample_type *> &outputs, unsigned int numFrames) override {
+        if (outputs.empty() || numFrames == 0)
+            return;
 
-        sample_type* output = outputs[0];
-        std::optional<sample_type*> freqMod = inputs.size() > 0 ? inputs[0] : std::nullopt;
-        std::optional<sample_type*> ampMod = inputs.size() > 1 ? inputs[1] : std::nullopt;
+        sample_type *output = outputs[0];
+        std::optional<sample_type *> freqMod =
+            inputs.size() > 0 ? inputs[0] : std::nullopt;
+        std::optional<sample_type *> ampMod =
+            inputs.size() > 1 ? inputs[1] : std::nullopt;
 
         sample_type phase = this->getPhase();
         sample_type baseFrequency = this->getFrequency();
         sample_type baseAmplitude = this->getAmplitude();
         const auto sampleRate = static_cast<sample_type>(AudioEngine::getSampleRate());
 
-        processSIMD(output, freqMod, ampMod, phase, baseFrequency, baseAmplitude, sampleRate, numFrames);
+        processSIMD(output, freqMod, ampMod, phase, baseFrequency, baseAmplitude,
+                    sampleRate, numFrames);
 
         this->setPhase(phase);
     }
@@ -272,12 +272,11 @@ class SawOsc : public Module<sample_type> {
         return this->getAmplitude() * (2.0 * t - 1.0 - this->polyBlep(t, dt));
     }
 
- 
-private:
+  private:
     using vec_t = llvm::SmallVector<sample_type, 8>;
 
-    void processSIMD(sample_type* output, const std::optional<sample_type*>& freqMod,
-                     const std::optional<sample_type*>& ampMod, sample_type& phase,
+    void processSIMD(sample_type *output, const std::optional<sample_type *> &freqMod,
+                     const std::optional<sample_type *> &ampMod, sample_type &phase,
                      sample_type baseFrequency, sample_type baseAmplitude,
                      sample_type sampleRate, unsigned int numFrames) {
         constexpr int vectorSize = 8;
@@ -334,7 +333,7 @@ private:
         phase = phaseVec.back();
     }
 
-    vec_t polyBlepSIMD(const vec_t& t, const vec_t& dt) {
+    vec_t polyBlepSIMD(const vec_t &t, const vec_t &dt) {
         vec_t result(t.size(), 0.0);
         for (size_t i = 0; i < t.size(); ++i) {
             if (t[i] < dt[i]) {
@@ -351,23 +350,26 @@ private:
 
 ////// TriangleOsc class definition //////
 
-template <typename sample_type>
-class TriangleOsc : public Module<sample_type> {
+template <typename sample_type> class TriangleOsc : public Module<sample_type> {
   public:
-    void process(const std::vector<std::optional<sample_type*>>& inputs,
-                 std::vector<sample_type*>& outputs, unsigned int numFrames) override {
-        if (outputs.empty() || numFrames == 0) return;
+    void process(const std::vector<std::optional<sample_type *>> &inputs,
+                 std::vector<sample_type *> &outputs, unsigned int numFrames) override {
+        if (outputs.empty() || numFrames == 0) {
+            return;
+        }
 
-        sample_type* output = outputs[0];
-        std::optional<sample_type*> freqMod = inputs.size() > 0 ? inputs[0] : std::nullopt;
-        std::optional<sample_type*> ampMod = inputs.size() > 1 ? inputs[1] : std::nullopt;
+        sample_type *output = outputs[0];
+        std::optional<sample_type *> freqMod = !inputs.empty() ? inputs[0] : std::nullopt;
+        std::optional<sample_type *> ampMod =
+            inputs.size() > 1 ? inputs[1] : std::nullopt;
 
         sample_type phase = this->getPhase();
         sample_type baseFrequency = this->getFrequency();
         sample_type baseAmplitude = this->getAmplitude();
         const auto sampleRate = static_cast<sample_type>(AudioEngine::getSampleRate());
 
-        processSIMD(output, freqMod, ampMod, phase, baseFrequency, baseAmplitude, sampleRate, numFrames);
+        processSIMD(output, freqMod, ampMod, phase, baseFrequency, baseAmplitude,
+                    sampleRate, numFrames);
 
         this->setPhase(phase);
     }
@@ -394,12 +396,11 @@ class TriangleOsc : public Module<sample_type> {
         return this->getAmplitude() * (value + 4.0 * (blep1 - blep2));
     }
 
- 
-private:
+  private:
     using vec_t = llvm::SmallVector<sample_type, 8>;
 
-    void processSIMD(sample_type* output, const std::optional<sample_type*>& freqMod,
-                     const std::optional<sample_type*>& ampMod, sample_type& phase,
+    void processSIMD(sample_type *output, const std::optional<sample_type *> &freqMod,
+                     const std::optional<sample_type *> &ampMod, sample_type &phase,
                      sample_type baseFrequency, sample_type baseAmplitude,
                      sample_type sampleRate, unsigned int numFrames) {
         constexpr int vectorSize = 8;
@@ -465,31 +466,31 @@ private:
     }
 };
 
-
-
 //////////////////// Pulse class definition //////////////////////
 
-
-template <typename sample_type>
-class PulseOsc : public Module<sample_type> {
-public:
+template <typename sample_type> class PulseOsc : public Module<sample_type> {
+  public:
     PulseOsc() : m_pulseWidth(0.5) {}
 
-    void process(const std::vector<std::optional<sample_type*>>& inputs,
-                 std::vector<sample_type*>& outputs, unsigned int numFrames) override {
-        if (outputs.empty() || numFrames == 0) return;
+    void process(const std::vector<std::optional<sample_type *>> &inputs,
+                 std::vector<sample_type *> &outputs, unsigned int numFrames) override {
+        if (outputs.empty() || numFrames == 0) {
+            return;
+        }
 
-        sample_type* output = outputs[0];
-        std::optional<sample_type*> freqMod = inputs.size() > 0 ? inputs[0] : std::nullopt;
-        std::optional<sample_type*> ampMod = inputs.size() > 1 ? inputs[1] : std::nullopt;
-        std::optional<sample_type*> pwMod = inputs.size() > 2 ? inputs[2] : std::nullopt;
+        sample_type *output = outputs[0];
+        std::optional<sample_type *> freqMod = !inputs.empty() ? inputs[0] : std::nullopt;
+        std::optional<sample_type *> ampMod =
+            inputs.size() > 1 ? inputs[1] : std::nullopt;
+        std::optional<sample_type *> pwMod = inputs.size() > 2 ? inputs[2] : std::nullopt;
 
         sample_type phase = this->getPhase();
         sample_type baseFrequency = this->getFrequency();
         sample_type baseAmplitude = this->getAmplitude();
         const auto sampleRate = static_cast<sample_type>(AudioEngine::getSampleRate());
 
-        processSIMD(output, freqMod, ampMod, pwMod, phase, baseFrequency, baseAmplitude, sampleRate, numFrames);
+        processSIMD(output, freqMod, ampMod, pwMod, phase, baseFrequency, baseAmplitude,
+                    sampleRate, numFrames);
 
         this->setPhase(phase);
     }
@@ -506,7 +507,8 @@ public:
 
     sample_type getCurrentValue() const override {
         sample_type t = this->getPhase() / Constants<sample_type>::twoPiConstant;
-        sample_type dt = this->getFrequency() / static_cast<sample_type>(AudioEngine::getSampleRate());
+        sample_type dt =
+            this->getFrequency() / static_cast<sample_type>(AudioEngine::getSampleRate());
         sample_type value = (t < m_pulseWidth) ? 1.0 : -1.0;
         value -= this->polyBlep(t, dt);
         value += this->polyBlep(std::fmod(t + 1.0 - m_pulseWidth, 1.0), dt);
@@ -517,9 +519,7 @@ public:
         m_pulseWidth = std::clamp(pulseWidth, 0.0, 1.0);
     }
 
-    sample_type getPulseWidth() const {
-        return m_pulseWidth;
-    }
+    sample_type getPulseWidth() const { return m_pulseWidth; }
 
     void setParameter(const std::string &name, sample_type value) override {
         if (name == "pulseWidth") {
@@ -546,15 +546,14 @@ public:
         return 3; // Frequency, amplitude, and pulse width modulation inputs
     }
 
-private:
+  private:
     using vec_t = llvm::SmallVector<sample_type, 8>;
 
-    void processSIMD(sample_type* output, const std::optional<sample_type*>& freqMod,
-                     const std::optional<sample_type*>& ampMod,
-                     const std::optional<sample_type*>& pwMod,
-                     sample_type& phase, sample_type baseFrequency,
-                     sample_type baseAmplitude, sample_type sampleRate,
-                     unsigned int numFrames) {
+    void processSIMD(sample_type *output, const std::optional<sample_type *> &freqMod,
+                     const std::optional<sample_type *> &ampMod,
+                     const std::optional<sample_type *> &pwMod, sample_type &phase,
+                     sample_type baseFrequency, sample_type baseAmplitude,
+                     sample_type sampleRate, unsigned int numFrames) {
         constexpr int vectorSize = 8;
         const vec_t twoPi(vectorSize, Constants<sample_type>::twoPiConstant);
         const vec_t sampleRateVec(vectorSize, sampleRate);
@@ -594,7 +593,7 @@ private:
                 sample_type t = tVec[j];
                 sample_type dt = dtVec[j];
                 sample_type pw = pwVec[j];
-                
+
                 sample_type value = (t < pw) ? 1.0 : -1.0;
                 value -= this->polyBlep(t, dt);
                 value += this->polyBlep(std::fmod(t + 1.0 - pw, 1.0), dt);
@@ -624,7 +623,6 @@ private:
 
     sample_type m_pulseWidth;
 };
-
 
 } // namespace tinysynth
 

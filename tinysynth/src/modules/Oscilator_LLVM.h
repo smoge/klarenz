@@ -130,16 +130,21 @@ template <typename sample_type> class Oscillator : public Module<sample_type> {
 ///////////////////////// SinOscc class definition /////////////////////////
 
 template <typename sample_type>
-class SineOsc : public Oscillator<sample_type> {
+class SineOsc : public Module<sample_type> {
   public:
     void process(const std::vector<std::optional<sample_type *>> &inputs,
                  std::vector<sample_type *> &outputs, unsigned int numFrames) override {
-        if (outputs.empty() || numFrames == 0)
+        
+    // void process(const std::vector<std::optional<sample_type *>> &inputs,
+    //              std::vector<sample_type *> &outputs, unsigned int numFrames) override {
+
+        if (outputs.empty() || numFrames == 0) {
             return;
+}
 
         sample_type *output = outputs[0];
         std::optional<sample_type *> freqMod =
-            inputs.size() > 0 ? inputs[0] : std::nullopt;
+            !inputs.empty() ? inputs[0] : std::nullopt;
         std::optional<sample_type *> ampMod =
             inputs.size() > 1 ? inputs[1] : std::nullopt;
 
@@ -229,7 +234,8 @@ private:
 
 /////// SawOsc class definition ///////
 
-template <typename sample_type> class SawOsc : public Oscillator<sample_type> {
+template <typename sample_type>
+class SawOsc : public Module<sample_type> {
   public:
     void process(const std::vector<std::optional<sample_type*>>& inputs,
                  std::vector<sample_type*>& outputs, unsigned int numFrames) override {
@@ -345,7 +351,8 @@ private:
 
 ////// TriangleOsc class definition //////
 
-template <typename sample_type> class TriangleOsc : public Oscillator<sample_type> {
+template <typename sample_type>
+class TriangleOsc : public Module<sample_type> {
   public:
     void process(const std::vector<std::optional<sample_type*>>& inputs,
                  std::vector<sample_type*>& outputs, unsigned int numFrames) override {
@@ -464,7 +471,7 @@ private:
 
 
 template <typename sample_type>
-class PulseOsc : public Oscillator<sample_type> {
+class PulseOsc : public Module<sample_type> {
 public:
     PulseOsc() : m_pulseWidth(0.5) {}
 
@@ -572,7 +579,7 @@ private:
             }
             if (pwMod && *pwMod) {
                 for (int j = 0; j < vectorSize; ++j) {
-                    pwVec[j] = std::clamp(m_pulseWidth + (*pwMod)[i + j], 0.0f, 1.0f);
+                    pwVec[j] = std::clamp(m_pulseWidth + (*pwMod)[i + j], 0.0, 1.0);
                 }
             }
 

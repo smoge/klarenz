@@ -3,20 +3,25 @@
 #define GAINMODULE_H
 
 #include "Module.h"
-#include <immintrin.h> // For AVX and SSE
 #include <memory>
+#include <vector>
+#include <string>
+#include <stdexcept>
+#include <algorithm>
+#include <cstring>
 
 namespace tinysynth {
 
 /**
  * @brief Example derived class: GainModule.
  */
-template <typename sample_type> class GainModule : public tinysynth::Module<sample_type> {
+template <typename sample_type>
+class GainModule : public tinysynth::Module<sample_type> {
 public:
     /**
      * @brief Constructor.
      */
-    GainModule(): m_gain(1.0F) {}
+    GainModule() : m_gain(1.0F) {}
 
     /**
      * @brief Maximum gain value.
@@ -24,7 +29,7 @@ public:
     static constexpr float MAX_GAIN = 10.0F;
 
     /**
-     * @brief Process audio with optional SIMD optimizations.
+     * @brief Process audio with LLVM SIMD optimizations.
      *
      * @param inputs Vector of input buffers.
      * @param outputs Vector of output buffers.
@@ -36,41 +41,28 @@ public:
             return;
         }
 
-        const sample_type* input = inputs[0];
-        sample_type* output = outputs[0];
+        const sample_type* __restrict input = inputs[0];
+        sample_type* __restrict output = outputs[0];
 
-#if defined(__AVX__)
-        // AVX optimization
-        const __m256 gain_vec = _mm256_set1_ps(m_gain);
+        // Use LLVM's vector extensions
+        typedef sample_type vector_type __attribute__((vector_size(32)));
+        constexpr int vector_size = sizeof(vector_type) / sizeof(sample_type);
+        
+        const vector_type gain_vec = {m_gain};
         unsigned int i = 0;
-        for (; i < numFrames - 7; i += 8) {
-            __m256 in = _mm256_loadu_ps(&input[i]);
-            __m256 out = _mm256_mul_ps(in, gain_vec);
-            _mm256_storeu_ps(&output[i], out);
+        
+        // Vector processing
+        for (; i + vector_size <= numFrames; i += vector_size) {
+            vector_type in;
+            __builtin_memcpy(&in, &input[i], sizeof(vector_type));
+            vector_type out = in * gain_vec;
+            __builtin_memcpy(&output[i], &out, sizeof(vector_type));
         }
+        
         // Handle remaining samples
         for (; i < numFrames; ++i) {
             output[i] = input[i] * m_gain;
         }
-#elif defined(__SSE__)
-        // SSE optimization
-        const __m128 gain_vec = _mm_set1_ps(m_gain);
-        unsigned int i = 0;
-        for (; i < numFrames - 3; i += 4) {
-            __m128 in = _mm_loadu_ps(&input[i]);
-            __m128 out = _mm_mul_ps(in, gain_vec);
-            _mm_storeu_ps(&output[i], out);
-        }
-        // Handle remaining samples
-        for (; i < numFrames; ++i) {
-            output[i] = input[i] * m_gain;
-        }
-#else
-        // Fallback to scalar processing
-        for (unsigned int i = 0; i < numFrames; ++i) {
-            output[i] = input[i] * m_gain;
-        }
-#endif
     }
 
     /**
@@ -78,14 +70,14 @@ public:
      *
      * @return Number of inputs.
      */
-    [[nodiscard]] unsigned int getNumInputs() const override { return 1; }
+    [[nodiscard]] unsigned int getNumInputs() const noexcept override { return 1; }
 
     /**
      * @brief Get the number of outputs.
      *
      * @return Number of outputs.
      */
-    [[nodiscard]] unsigned int getNumOutputs() const override { return 1; }
+    [[nodiscard]] unsigned int getNumOutputs() const noexcept override { return 1; }
 
     /**
      * @brief Get the name of an input.
@@ -121,7 +113,7 @@ public:
      */
     void setParameter(const std::string& name, sample_type value) override {
         if (name == "Gain") {
-            m_gain = clamp(value, 0.0F, MAX_GAIN);
+            m_gain = std::clamp(value, 0.0F, MAX_GAIN);
         }
     }
 
@@ -143,21 +135,25 @@ public:
      *
      * @return Vector of parameter names.
      */
-    [[nodiscard]] std::vector<std::string> getParameterNames() const override { return { "Gain" }; }
+    [[nodiscard]] std::vector<std::string> getParameterNames() const noexcept override {
+        return { "Gain" };
+    }
 
     /**
      * @brief Get the name of the module.
      *
      * @return Name of the module.
      */
-    [[nodiscard]] std::string getName() const override { return "Gain Module"; }
+    [[nodiscard]] std::string getName() const noexcept override { return "Gain Module"; }
 
     /**
      * @brief Get the description of the module.
      *
      * @return Description of the module.
      */
-    [[nodiscard]] std::string getDescription() const override { return "A simple gain control module."; }
+    [[nodiscard]] std::string getDescription() const noexcept override {
+        return "A simple gain control module.";
+    }
 
     /**
      * @brief Clone the module.
@@ -171,10 +167,10 @@ public:
     /**
      * @brief Reset the module's internal state.
      */
-    void reset() override { m_gain = 1.0F; }
+    void reset() noexcept override { m_gain = 1.0F; }
 
 private:
-    sample_type m_gain {};
+    sample_type m_gain;
 };
 
 } // namespace tinysynth

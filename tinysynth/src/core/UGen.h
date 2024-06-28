@@ -1,13 +1,10 @@
-// Module.h
-#ifndef MODULE_H
-#define MODULE_H
+// UGen.h
+#ifndef UGEN_H
+#define UGEN_H
 
 #pragma once
 
-#include <immintrin.h> // For AVX
-#include <xmmintrin.h> // For SSE
-
-#include <algorithm> // For std::max and std::min
+#include <algorithm>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -17,22 +14,18 @@
 
 namespace tinysynth {
 
-template <typename sample_type> class Module {
-  public:
-    Module() = default;
-    Module(const Module &) = default;
-    Module(Module &&) = delete;
-    Module &operator=(const Module &) = default;
-    Module &operator=(Module &&) = delete;
-    virtual ~Module() = default;
+template <typename sample_type> class UGen {
+public:
+    UGen() = default;
+    UGen(const UGen &) = default;
+    UGen(UGen &&) = delete;
+    UGen &operator=(const UGen &) = default;
+    UGen &operator=(UGen &&) = delete;
+    virtual ~UGen() = default;
 
-    // virtual void process(const std::vector<sample_type *> &inputs,
-    //                      std::vector<sample_type *> &outputs, unsigned int numFrames) = 0;
-
-  virtual void process(const std::vector<std::optional<sample_type*>>& inputs,
+    virtual void process(const std::vector<std::optional<sample_type*>>& inputs,
                          std::vector<sample_type*>& outputs,
                          unsigned int numFrames) = 0;
-    
     
     [[nodiscard]] virtual unsigned int getNumInputs() const = 0;
     [[nodiscard]] virtual unsigned int getNumOutputs() const = 0;
@@ -43,16 +36,16 @@ template <typename sample_type> class Module {
     [[nodiscard]] virtual std::vector<std::string> getParameterNames() const = 0;
     [[nodiscard]] virtual std::string getName() const = 0;
     [[nodiscard]] virtual std::string getDescription() const = 0;
-    [[nodiscard]] virtual std::unique_ptr<Module> clone() const = 0;
+    [[nodiscard]] virtual std::unique_ptr<UGen> clone() const = 0;
     virtual void reset() = 0;
     virtual void prepare(unsigned int sampleRate) {}
 
-  protected:
+protected:
     template <typename T> static T clamp(T value, T min, T max) {
         return std::max(min, std::min(value, max));
     }
 };
 
-#endif // MODULE_H
-
 } // namespace tinysynth
+
+#endif // UGEN_H

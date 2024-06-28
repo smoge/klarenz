@@ -45,11 +45,12 @@ template <typename sample_type> class ModularSystem {
     Module<sample_type> *getModule(const std::string &name);
 
   private:
+
     struct Connection {
         std::string fromModule;
-        unsigned int outputIndex{};
+        std::vector<unsigned int> outputIndices;
         std::string toModule;
-        unsigned int inputIndex{};
+        std::vector<unsigned int> inputIndices;
     };
 
     std::unordered_map<std::string, std::unique_ptr<Module<sample_type>>> m_modules;

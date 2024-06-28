@@ -40,6 +40,13 @@ endif()
 
 find_package(glfw3 REQUIRED)
 
+# LLVM handling
+find_package(LLVM REQUIRED CONFIG)
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+include_directories(${LLVM_INCLUDE_DIRS})
+add_definitions(${LLVM_DEFINITIONS})
+
 # ImGui directory (update this path if necessary)
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include/external/imgui)
 
@@ -52,6 +59,7 @@ include_directories(
     ${JACK_INCLUDE_DIR}
     ${IMGUI_DIR}
     ${IMGUI_DIR}/backends
+    ${LLVM_INCLUDE_DIRS}
 )
 
 # Add ImGui source files
@@ -79,6 +87,7 @@ target_link_libraries(TinySynth PRIVATE
     ${JACK_LIBRARIES}
     ${OPENGL_LIBRARIES}
     glfw
+    ${LLVM_LIBRARIES}
 )
 
 # Include directories for your library
@@ -90,6 +99,7 @@ target_include_directories(TinySynth PRIVATE
     ${IMGUI_DIR}
     ${IMGUI_DIR}/backends
     ${CMAKE_CURRENT_BINARY_DIR}
+    ${LLVM_INCLUDE_DIRS}
 )
 
 # Create main executable
@@ -103,7 +113,6 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests)
     )
     add_executable(run_tests ${TEST_SOURCES})
     target_link_libraries(run_tests PRIVATE TinySynth)
-
     # Add test
     enable_testing()
     add_test(NAME AllTests COMMAND run_tests)
@@ -117,10 +126,13 @@ check_cxx_source_compiles("
     #include <span>
     int main() { return 0; }
 " HAVE_CPP20_FEATURES)
-
 if(NOT HAVE_CPP20_FEATURES)
     message(FATAL_ERROR "Your compiler does not support the required C++20 features.")
 endif()
 
 # Compiler flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${JACK_INCLUDE_DIR}")
+
+# LLVM flags
+llvm_map_components_to_libnames(llvm_libs support core irreader ipo passes)
+target_link_libraries(TinySynth PRIVATE ${llvm_libs})

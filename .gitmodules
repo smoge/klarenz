@@ -10,3 +10,6 @@
 [submodule "tinysynth/include/external/nsimd"]
 	path = tinysynth/include/external/nsimd
 	url = https://github.com/agenium-scale/nsimd.git
+[submodule "tinysynth/include/external/xsimd"]
+	path = tinysynth/include/external/xsimd
+	url = https://github.com/xtensor-stack/xsimd.git

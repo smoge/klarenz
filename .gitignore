@@ -29,3 +29,4 @@ tinysynth/tinysynth/cmake_install.cmake
 tinysynth/CMakeFiles/
 tinysynth/cmake_install.cmake
 tinysynth/build.ninja
+tinysynth/.cache/

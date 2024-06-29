@@ -26,7 +26,7 @@ if(NOT JACK_FOUND)
 endif()
 
 # JACK include directory (update this path if necessary)
-set(JACK_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include/external/jack2/common)
+set(JACK_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tinysynth/include/external/jack2/common)
 message(STATUS "Using JACK include directory: ${JACK_INCLUDE_DIR}")
 
 # OpenGL handling
@@ -41,14 +41,14 @@ endif()
 find_package(glfw3 REQUIRED)
 
 # LLVM handling
-find_package(LLVM REQUIRED CONFIG)
-message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
-message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
-include_directories(${LLVM_INCLUDE_DIRS})
-add_definitions(${LLVM_DEFINITIONS})
+# find_package(LLVM REQUIRED CONFIG)
+# message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+# message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+# include_directories(${LLVM_INCLUDE_DIRS})
+# add_definitions(${LLVM_DEFINITIONS})
 
 # ImGui directory (update this path if necessary)
-set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include/external/imgui)
+set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/external/imgui)
 
 # Include directories
 include_directories(
@@ -59,7 +59,7 @@ include_directories(
     ${JACK_INCLUDE_DIR}
     ${IMGUI_DIR}
     ${IMGUI_DIR}/backends
-    ${LLVM_INCLUDE_DIRS}
+    # ${LLVM_INCLUDE_DIRS}
 )
 
 # Add ImGui source files
@@ -133,6 +133,6 @@ endif()
 # Compiler flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${JACK_INCLUDE_DIR}")
 
-# LLVM flags
-llvm_map_components_to_libnames(llvm_libs support core irreader ipo passes)
-target_link_libraries(TinySynth PRIVATE ${llvm_libs})
+# # LLVM flags
+# llvm_map_components_to_libnames(llvm_libs support core irreader ipo passes)
+# target_link_libraries(TinySynth PRIVATE ${llvm_libs})

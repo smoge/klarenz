@@ -7,3 +7,6 @@
 [submodule "tinysynth/include/external/nova-simd"]
 	path = tinysynth/include/external/nova-simd
 	url = https://github.com/timblechmann/nova-simd.git
+[submodule "tinysynth/include/external/nsimd"]
+	path = tinysynth/include/external/nsimd
+	url = https://github.com/agenium-scale/nsimd.git

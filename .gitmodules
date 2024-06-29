@@ -4,3 +4,6 @@
 [submodule "tinysynth/include/external/jack2"]
 	path = tinysynth/include/external/jack2
 	url = https://github.com/jackaudio/jack2.git
+[submodule "tinysynth/include/external/nova-simd"]
+	path = tinysynth/include/external/nova-simd
+	url = https://github.com/timblechmann/nova-simd.git
